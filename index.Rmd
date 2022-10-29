@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "World Development Indicators"
+author: "Priyanka Balakumar, Utsav Vachhani, Eklavya Jain"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
