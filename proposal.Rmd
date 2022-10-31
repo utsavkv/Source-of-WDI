@@ -2,5 +2,15 @@
 
 ## Research topic
 
+World Development Indicators comprises of data about the historic levels of human development of countries in a global landscape through the years 1960 to 2021. We want to analyze this dataset and map out various trends present in the data. Some of them are listed below:
+- We would want to evaluate different countries based on numerous economic, social, and environmental indicators for a given year, or check the progress of a single country over 4 decades. 
+- We would want to observe trends of the indicators as well. For instance, the global economy has risen by a factor of 90 in the last 6 decades. It is possible that this change results in an increasing graph of an economic indicator as opposed to any actual development. 
+- We could analyze $CO_2$ emissions trends across countries and the specific sectors that contribute most to emissions. 
+- We could propose a way to track agricultural and rural development by analyzing the trend of irrigated land over the years and the livestock production index. 
+- We also have data for different age groups for all indicators. We can use such data to judge the effectiveness/contribution of indicators like education and gender in the overall development of a country. 
+- We can visualize how advances in healthcare (through indicators like mortality rates, reproductive health, etc.) have contributed to the development of the countries, and how the development of a country has improved the healthcare situation. 
+
+These are some of the factors which we can visualize and give concrete conclusions about. 
+
 ## Data availability
 
