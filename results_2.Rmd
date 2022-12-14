@@ -57,7 +57,37 @@ labs(title="Life Expectancy at Birth by Country",
      x="Males",
      y="Females")
 ```
+```{r}
+sample_df <-df.long %>% 
+  filter(Indicator.Code %in% c('SP.DYN.LE00.MA.IN',
+                               'SP.DYN.LE00.FE.IN'
+                               ) & Year %in% c(1960,1980,2000,2020))
+female_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.MA.IN")
+male_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.FE.IN")
+```
 
+
+```{r}
+colnames(female_df)[6] <- "female_life_expectancy"
+colnames(male_df)[6] <- "male_life_expectancy"
+life_expectancy = data.frame(female_df$Year,female_df$Country.Name,female_df$female_life_expectancy,male_df$male_life_expectancy)
+```
+
+
+
+```{r}
+ggplot(life_expectancy,aes(x=male_df.male_life_expectancy, y=female_df.female_life_expectancy) )+
+geom_point(colour="white", fill="darkturquoise", shape=21, alpha=.55, size=5)+
+geom_abline(intercept = 0, slope=1)+
+scale_x_continuous(limits=c(35,80))+
+scale_y_continuous(limits=c(35,80))+
+labs(title="Life Expectancy at Birth by Country",
+     x="Males",
+     y="Females",
+     subtitle="266 countries",)+
+facet_wrap(~female_df.Year, scales = "free_x")
+
+```
 
 
 
