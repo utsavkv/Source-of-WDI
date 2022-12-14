@@ -9,6 +9,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(forcats)
+library(ggpubr)
 ```
 
 <!-- Reading the Data, Converting to Long format -->
@@ -48,7 +49,7 @@ df.long %>%
   labs(x = 'Rate', 
        y = 'Country Name', 
        title = 'Adult Mortality Rates for 2020') + 
-  theme_bw()
+  theme_bw(8)
   
 
 df.long %>% 
@@ -67,25 +68,25 @@ df.long %>%
   labs(x = 'Rate', 
        y = 'Country Name', 
        title = 'Infant Mortality Rates for 2020') + 
-  theme_bw()
-
-df.long %>% 
-  filter(Indicator.Code %in% c('SH.DYN.MORT.FE','SH.DYN.MORT.MA')  & Year == 2020) %>%
-  mutate(Value = coalesce(Value, 0),
-         Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
-  group_by(Country.Name, Indicator.Code) %>%
-  mutate(Value = mean(Value)) %>% 
-  ungroup() %>%
-  ggplot(aes(Value,
-             fct_reorder2(Country.Name,
-                          Indicator.Code == 'SH.DYN.MORT.MA', 
-                          Value, .desc = FALSE),
-             color = Indicator.Name)) + 
-  geom_point() + 
-  labs(x = 'Rate', 
-       y = 'Country Name', 
-       title = 'Under-5 Mortality Rates for 2020') + 
-  theme_bw()
+  theme_bw(8)
+# 
+# df.long %>% 
+#   filter(Indicator.Code %in% c('SH.DYN.MORT.FE','SH.DYN.MORT.MA')  & Year == 2020) %>%
+#   mutate(Value = coalesce(Value, 0),
+#          Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
+#   group_by(Country.Name, Indicator.Code) %>%
+#   mutate(Value = mean(Value)) %>% 
+#   ungroup() %>%
+#   ggplot(aes(Value,
+#              fct_reorder2(Country.Name,
+#                           Indicator.Code == 'SH.DYN.MORT.MA', 
+#                           Value, .desc = FALSE),
+#              color = Indicator.Name)) + 
+#   geom_point() + 
+#   labs(x = 'Rate', 
+#        y = 'Country Name', 
+#        title = 'Under-5 Mortality Rates for 2020') + 
+#   theme_bw()
 
 
 ```
@@ -94,7 +95,7 @@ df.long %>%
 
 <!-- Presented for 12 countries with the maximum infant mortality rate -->
 
-```{r fig.height=6}
+```{r}
 
 countries.mortality <- (df.long %>% 
   filter(Indicator.Code %in% c('SP.DYN.IMRT.MA.IN')  & Year == 2020) %>%
@@ -106,9 +107,10 @@ df.long %>%
   filter(Indicator.Code %in% c('SP.DYN.AMRT.FE',
                                'SP.DYN.AMRT.MA',
                                'SP.DYN.IMRT.FE.IN',
-                               'SP.DYN.IMRT.MA.IN',
-                               'SH.DYN.MORT.FE',
-                               'SH.DYN.MORT.MA')) %>%
+                               'SP.DYN.IMRT.MA.IN'
+                               # 'SH.DYN.MORT.FE',
+                               # 'SH.DYN.MORT.MA'
+                               )) %>%
   filter(Country.Name %in% countries.mortality) %>% 
   mutate(Indicator.Name = fct_reorder2(Indicator.Name, Year, Value)) %>%
   ggplot(aes(Year, Value, color = Indicator.Name)) +
@@ -118,12 +120,12 @@ df.long %>%
   labs(x = 'Year', 
        y = 'Mortality Rate', 
        title = 'Mortality Rates') +
-  theme_bw()
+  theme_bw(8)
 ```
 
 <!-- Missing Values -->
 
-```{r fig.width = 4}
+```{r}
 
 df.long %>%
   group_by(Country.Name) %>%
@@ -132,16 +134,16 @@ df.long %>%
   arrange(desc(percent)) %>%
   slice(1:15) %>%
   ggplot(aes(fct_reorder(Country.Name, percent, .desc = TRUE), percent)) +
-  geom_col(fill = 'lightblue') + 
+  geom_col(fill = 'skyblue') + 
   labs(x = 'Country Name', 
        y = 'Percent of Missing Values',
        title = 'Missing Values by Country') +
   guides(x = guide_axis(angle = 45)) + 
-  theme_bw()
+  theme_bw(8)
 
 ```
 
-```{r fig.width = 4}
+```{r}
 
 df.long %>%
   group_by(Year) %>%
@@ -150,16 +152,52 @@ df.long %>%
   arrange(desc(percent)) %>%
   # slice(1:15) %>%
   ggplot(aes(Year, percent)) +
-  geom_col(fill = 'lightblue', width = 0.5) + 
+  geom_col(fill = 'skyblue', width = 0.5) + 
   labs(x = 'Year', 
        y = 'Percent of Missing Values',
        title = 'Missing Values by Year') +
-  theme_bw()
+  theme_bw(8)
 
 ```
 
+```{r}
 
-``` {r fig.width = 5}
+df.long %>%
+  group_by(Indicator.Code) %>%
+  summarize(percent = sum(is.na(Value))*100/n()) %>%
+  ungroup() %>%
+  arrange(desc(percent)) %>%
+  # mutate(Indicator.Code = fct_reorder(Indicator.Code, percent, .desc = TRUE)) %>%
+  slice(1:20) %>%
+  ggplot(aes(fct_reorder(Indicator.Code, percent, .desc = TRUE), percent)) +
+  geom_col(fill = 'skyblue', width = 0.8) + 
+  labs(x = 'Indicator', 
+       y = 'Percent of Missing Values',
+       title = 'Missing Values by Indicator (Most)') +
+  guides(x = guide_axis(angle = 45)) + 
+  theme_bw(8)
+
+```
+
+```{r}
+
+df.long %>%
+  group_by(Indicator.Code) %>%
+  summarize(percent = sum(is.na(Value))*100/n()) %>%
+  ungroup() %>%
+  arrange(percent) %>%
+  slice(1:20) %>%
+  ggplot(aes(fct_reorder(Indicator.Code, percent), percent)) +
+  geom_col(fill = 'skyblue', width = 0.7) + 
+  labs(x = 'Indicator', 
+       y = 'Percent of Missing Values',
+       title = 'Missing Values by Indicator (Least)') +
+  guides(x = guide_axis(angle = 45)) +
+  theme_bw(8)
+
+```
+
+``` {r}
 
 df.long %>% 
   filter(Indicator.Code %in% c('EN.ATM.CO2E.PC',
@@ -169,21 +207,89 @@ df.long %>%
                                'SP.DYN.AMRT.MA',
                                'SP.DYN.IMRT.FE.IN',
                                'SP.DYN.IMRT.MA.IN',
-                               'SH.DYN.MORT.FE',
-                               'SH.DYN.MORT.MA', 
+                               # 'SH.DYN.MORT.FE',
+                               # 'SH.DYN.MORT.MA', 
                                'SL.TLF.0714.FE.ZS', 
-                               'SL.TLF.0714.MA.ZS')) %>%
+                               'SL.TLF.0714.MA.ZS', 
+                               'NY.GDP.PCAP.CD', 
+                               'SI.DST.FRST.20', 
+                               'SI.DST.05TH.20')) %>%
   group_by(Indicator.Name, Year) %>%
   summarize(percent = sum(is.na(Value))*100/n()) %>% 
   ungroup() %>%
   ggplot(aes(Year, y = fct_reorder(Indicator.Name, percent, sum), fill = percent)) +
   geom_tile(color = 'white') +
-  scale_fill_gradient2(low = "white", mid = "lightblue", high ="darkblue") + 
-  theme_bw()
+  scale_fill_gradient2(low = "white", high ="red") + 
+  labs(x = 'Year', 
+       y = 'Indicator Name', 
+       title = 'Missing Values for Selected Indicators') + 
+  theme_bw(8)
 
 ```
 
 ```{r}
-library(redav)
-plot_missing(df)
+# GDP
+
+df.gdp <- df.long %>% 
+  filter(Indicator.Code == 'NY.GDP.PCAP.CD') %>% 
+  group_by(Year) %>%
+  summarise(GDP = sum(Value, na.rm = TRUE), Missing = sum(is.na(Value))) %>%
+  ungroup() 
+
+p1 <- df.gdp %>%
+  ggplot(aes(Year, GDP)) + geom_line() + theme_bw(8) + labs(title = 'Overall GDP over the years', subtitle = 'Along with corresponding missing values')
+
+p2 <- df.gdp %>%
+  ggplot(aes(Year, Missing)) + geom_col(fill = 'red', alpha = 0.5) + theme_bw(8)
+
+ggpubr::ggarrange(p1, p2, ncol = 1)
+ 
+  
 ```
+
+```{r}
+
+df.long %>%
+  filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Year == '2020') %>%
+  mutate(Value = coalesce(Value, 0),
+         Country.Name = fct_lump_n(Country.Name, 25, w = Value)) %>%
+  group_by(Country.Name) %>%
+  mutate(Value = median(Value)) %>%
+  ungroup() %>%
+  ggplot(aes(Value, fct_reorder(Country.Name, Value, .desc = FALSE))) + 
+  geom_point() + 
+  labs(x = 'GDP per Capita (USD)', 
+       y = 'Country Name', 
+       title = 'GDP per capita for 2020') + 
+  theme_bw(8)
+  
+
+# Compare it with the value of a dollar, how it has grown.
+```
+
+
+
+```{r}
+
+countries.gdp <- (df.long %>%
+  filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Year == '2020') %>%
+  arrange(desc(Value)) %>%
+  slice(1:5) %>%
+  select(Country.Name) %>%
+  as.vector())$Country.Name
+ 
+p1 <- df.long %>%
+  filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Country.Name %in% countries.gdp) %>%
+  mutate(Country.Name = fct_reorder2(Country.Name, Year == '2020', Value)) %>%
+  ggplot(aes(Year, Value, color = Country.Name)) + geom_line() + labs(title = 'GDP per Capita (current USD)') + theme_bw(8)
+
+
+# update color of bar plot by releveling factors
+p2 <- df.long %>%
+  filter(Indicator.Code == 'NY.GDP.MKTP.CD' & Country.Name %in% countries.gdp & Year == '2020') %>%
+  ggplot(aes(Country.Name, Value, fill = Country.Name)) + geom_col() + coord_flip() + labs(title = 'GDP (current USD)') + theme_bw(8) 
+
+ggarrange(p1, p2, ncol = 2, common.legend = TRUE)
+```
+
+
