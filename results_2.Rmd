@@ -142,30 +142,14 @@ q + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
   
 
 ```{r}
-ggplot(education_df_clean,aes(Country.Name, Value, color = Indicator.Name)) +
+qq <- ggplot(education_df_clean,aes(Country.Name, Value, color = Indicator.Name)) +
   geom_bar(stat='identity') 
+
+qq + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 ```
 
-```{r}
-ggplot(education_df_clean, mapping = aes(Country.Code,Value)) +
-         geom_bar(aes(fill = Indicator.Name),
-                  position = "dodge")
-```
-
-
-```{r}
-colnames(female_df)[6] <- "female_education"
-colnames(male_df)[6] <- "male_education"
-education = data.frame(female_df$Country.Name,female_df$female_life_expectancy,male_df$male_life_expectancy)
-```
-
-
-
-```{r}
-female_df
-```
-
-
+  
 ```{r}
 library(sf)
 
