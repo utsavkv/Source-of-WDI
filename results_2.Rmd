@@ -62,8 +62,8 @@ sample_df <-df.long %>%
   filter(Indicator.Code %in% c('SP.DYN.LE00.MA.IN',
                                'SP.DYN.LE00.FE.IN'
                                ) & Year %in% c(1960,1980,2000,2020))
-female_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.MA.IN")
-male_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.FE.IN")
+female_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.FE.IN")
+male_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.MA.IN")
 ```
 
 
@@ -113,6 +113,56 @@ df.long %>%
        y = 'Life Expectancy', 
        title = 'Life Expectancy at Birth') +
   theme_bw()
+```
+
+
+
+```{r}
+
+education_df <-df.long %>% 
+  filter(Indicator.Code %in% c('SE.ADT.LITR.MA.ZS',
+                               'SE.ADT.LITR.FE.ZS'
+                               ) & (Year == 2020) & (Country.Code %in%   c('UMC','MIC','LMC','LIC','LMY')))
+
+education_df_clean = education_df[complete.cases(education_df),]
+
+```
+
+```{r}
+
+level_order <-c("Low income", "Low & middle income", "Lower middle income", "Middle income","Upper middle income")
+q <- ggplot(education_df, aes(x = factor(Country.Name, level = level_order), y = Value, colour = Indicator.Name,group = Indicator.Name)) +
+  geom_line(stat="identity") +
+   labs(x = 'Income Group', 
+       y = 'Literacy Rate', 
+       title = 'Literacy Rate Ages 15+ by Gender and Income Group') 
+
+q + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+  
+
+```{r}
+ggplot(education_df_clean,aes(Country.Name, Value, color = Indicator.Name)) +
+  geom_bar(stat='identity') 
+```
+
+```{r}
+ggplot(education_df_clean, mapping = aes(Country.Code,Value)) +
+         geom_bar(aes(fill = Indicator.Name),
+                  position = "dodge")
+```
+
+
+```{r}
+colnames(female_df)[6] <- "female_education"
+colnames(male_df)[6] <- "male_education"
+education = data.frame(female_df$Country.Name,female_df$female_life_expectancy,male_df$male_life_expectancy)
+```
+
+
+
+```{r}
+female_df
 ```
 
 
