@@ -301,7 +301,7 @@ df.fossil_energy = df.environment %>% filter(Indicator.Code == 'EG.USE.COMM.FO.Z
 df.pcp = cbind(df.agriland, df.child_agri, df.co2, df.forest_area, df.fossil_energy) 
 df.pcp_frac = df.pcp %>% sample_frac(0.005)
 ggparcoord(df.pcp, columns=3:7, groupColumn=2, alpha=0.15, scale='uniminmax',
-           title = "Global Environmental Trends through a splined-PCP") + theme_bw(8)
+           title = "Global Environmental Trends through a PCP") + theme_bw(8)
 ```
 
 <!-- parallel coordinates plot,  -->
