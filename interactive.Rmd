@@ -1,3 +1,35 @@
 # Interactive component
 
+```{r}
 
+# select a subset of countries and compare their GDP per Capita over different years
+library(dplyr)
+write.csv(df.long %>%
+  filter(Country.Name %in% c('France', 'Russia', 'United States', 'India', 'Monaco', 'Switzerland') &
+           Indicator.Code == 'NY.GDP.PCAP.CD') %>% select(Country.Name, Year, Value), 'data/d3.csv')
+```
+
+<style>
+  * {
+    font-family: sans-serif;
+  }
+
+  .source {
+     font-size: 9pt;
+  }
+</style> 
+
+<div style="padding-left: 100px">
+  <h3></h3>
+  <p>Each dot represents a person.</p>
+  <svg id="svg1"></svg>
+  <div id="slider" style="padding-left: 16px;">
+  <input type="range" step="10">
+  </div>
+  <svg id="svg2"></svg>
+  <p class="source">Data source: http://www.demographia.com/dm-nyc.htm</p>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="interactive.js"></script>
+<br>

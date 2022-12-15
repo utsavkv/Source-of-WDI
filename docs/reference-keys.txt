@@ -17,3 +17,11 @@ presented-for-12-countries-with-the-maximum-infant-mortality-rate
 dataset-summary
 missing-values-by-country
 missing-values-by-indicator
+missing-values-by-year
+social-indicators
+mortality-rates
+life-expectancy
+literacy-rates
+economic-indicators
+gross-domestic-product
+income-disparity

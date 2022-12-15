@@ -23,7 +23,7 @@
 <meta name="author" content="Priyanka Balakumar, Utsav Vachhani, Eklavya Jain" />
 
 
-<meta name="date" content="2022-12-13" />
+<meta name="date" content="2022-12-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -81,10 +81,31 @@
 <li class="chapter" data-level="3" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>3</b> Data</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="data.html"><a href="data.html#sources"><i class="fa fa-check"></i><b>3.1</b> Sources</a></li>
-<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a></li>
-<li class="chapter" data-level="3.3" data-path="data.html"><a href="data.html#missing-value-analysis"><i class="fa fa-check"></i><b>3.3</b> Missing value analysis</a></li>
+<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data.html"><a href="data.html#dataset-summary"><i class="fa fa-check"></i><b>3.2.1</b> Dataset Summary</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a></li>
+<li class="chapter" data-level="3.3" data-path="data.html"><a href="data.html#missing-value-analysis"><i class="fa fa-check"></i><b>3.3</b> Missing value analysis</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="data.html"><a href="data.html#missing-values-by-country"><i class="fa fa-check"></i><b>3.3.1</b> Missing Values by Country</a></li>
+<li class="chapter" data-level="3.3.2" data-path="data.html"><a href="data.html#missing-values-by-indicator"><i class="fa fa-check"></i><b>3.3.2</b> Missing values by Indicator</a></li>
+<li class="chapter" data-level="3.3.3" data-path="data.html"><a href="data.html#missing-values-by-year"><i class="fa fa-check"></i><b>3.3.3</b> Missing Values by Year</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#social-indicators"><i class="fa fa-check"></i><b>4.1</b> Social Indicators</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#mortality-rates"><i class="fa fa-check"></i><b>4.1.1</b> Mortality Rates</a></li>
+<li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#life-expectancy"><i class="fa fa-check"></i><b>4.1.2</b> Life Expectancy</a></li>
+<li class="chapter" data-level="4.1.3" data-path="results.html"><a href="results.html#literacy-rates"><i class="fa fa-check"></i><b>4.1.3</b> Literacy Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="results.html"><a href="results.html#economic-indicators"><i class="fa fa-check"></i><b>4.2</b> Economic Indicators</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#gross-domestic-product"><i class="fa fa-check"></i><b>4.2.1</b> Gross Domestic Product</a></li>
+<li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#income-disparity"><i class="fa fa-check"></i><b>4.2.2</b> Income Disparity</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="5" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>5</b> Interactive component</a></li>
 <li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a></li>
 <li class="divider"></li>
@@ -108,22 +129,61 @@
             <section class="normal" id="section-">
 <div id="results" class="section level1 hasAnchor" number="4">
 <h1><span class="header-section-number">Chapter 4</span> Results<a href="results.html#results" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="reading-the-data-converting-to-long-format" class="section level5 hasAnchor" number="4.0.0.0.1">
-<h5><span class="header-section-number">4.0.0.0.1</span> Reading the Data, Converting to Long format<a href="results.html#reading-the-data-converting-to-long-format" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>We proposed to analyze various social, economic, and environmental indicators for various countries over the years. We have broken down our results into three distinct sections with each of them discussing a few relevant indicators.</p>
+<div id="social-indicators" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Social Indicators<a href="results.html#social-indicators" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the following subsections, we are going to visualize various plots depicting and comparing yearly trends for various indicators. We will also be comparing certain indicators across countries to understand the overall status of development around the world.</p>
+<div id="mortality-rates" class="section level3 hasAnchor" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Mortality Rates<a href="results.html#mortality-rates" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We start off our discussion with mortality rates. Mortality rate is typically expressed in units of deaths per 1,000 individuals per year <img src="https://en.wikipedia.org/wiki/Mortality_rate" alt="(wikipedia)" />. The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:</p>
+<ol style="list-style-type: decimal">
+<li>Mortality rate, adult, male (per 1,000 male adults)</li>
+<li>Mortality rate, adult, female (per 1,000 female adults)</li>
+<li>Mortality rate, infant male (per 1,000 live births)</li>
+<li>Mortality rate, infant female (per 1,000 live births)</li>
+</ol>
+<p>One thing that strikes the eye immediately is that the mortality rate for infant male or infant female would be less than the mortality rate of adult male or adult female. This is due to the definition of the indicators for infants. They are calculating number of deaths of male and female infants per 1000 live births whereas adult mortality rates are being recorded per 1000 adults of the respective gender. However, the infant mortality rates would be less than adult mortality rates due to the nature of life.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-6-2.png" width="672" />
+Since the number of countries are huge, we just consider the top few countries in terms of largest mortality rates. Further, we use Cleveland dot plots as they provide an effective way to visualize a categorical variable (Country.Name) and a continuous value (Mortality Rate) corresponding to each category. The last few countries have been lumped together and the median was considered for them. The categories are arranged in the descending order of male mortality rates.</p>
+<p>We observe the following:</p>
+<ol style="list-style-type: decimal">
+<li>African nations have the highest mortality rates for both infants and adults.</li>
+<li>Male mortality rates are generally higher than female mortality rates.</li>
+</ol>
+<p>The above plot shows the countries that have the maximum mortality rates. To view the trend of mortality rates over the years, we handpick these countries and draw line charts for various mortality rates. We use the trick of faceting to make the process of reading the graph easy and aesthetic at the same time.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>We observe the following:
+1. The mortality rates have decreased over the years for all countries over the years.
+2. As discussed previously, the adult male mortality rate is greater than adult female mortality rate which in turn is greater than infant mortality rates.
+3. There was a rise in mortality rates from 1990 to 2000 for almost all countries.
+4. This rise could be attributed to a myriad of region specific reasons - new diseases/illnesses, lack of physical activity, increased tobacco usage, lack of proper nutrition, among others.</p>
 </div>
-<div id="cleveland-dot-plot-showing-mortality-rates-for-2020" class="section level5 hasAnchor" number="4.0.0.0.2">
-<h5><span class="header-section-number">4.0.0.0.2</span> Cleveland Dot Plot showing Mortality Rates for 2020<a href="results.html#cleveland-dot-plot-showing-mortality-rates-for-2020" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<div id="life-expectancy" class="section level3 hasAnchor" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Life Expectancy<a href="results.html#life-expectancy" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 </div>
-<div id="sorted-in-descending-order-on-male-mortality-rates" class="section level5 hasAnchor" number="4.0.0.0.3">
-<h5><span class="header-section-number">4.0.0.0.3</span> Sorted in descending order on Male Mortality Rates<a href="results.html#sorted-in-descending-order-on-male-mortality-rates" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-7-2.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<div id="literacy-rates" class="section level3 hasAnchor" number="4.1.3">
+<h3><span class="header-section-number">4.1.3</span> Literacy Rates<a href="results.html#literacy-rates" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 </div>
-<div id="line-plots-with-facets-showing-multiple-mortality-rates-of-countries-over-the-years" class="section level5 hasAnchor" number="4.0.0.0.4">
-<h5><span class="header-section-number">4.0.0.0.4</span> Line Plots with Facets showing multiple mortality rates of countries over the years<a href="results.html#line-plots-with-facets-showing-multiple-mortality-rates-of-countries-over-the-years" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<div id="presented-for-12-countries-with-the-maximum-infant-mortality-rate" class="section level6 hasAnchor" number="4.0.0.0.4.1">
-<h6><span class="header-section-number">4.0.0.0.4.1</span> Presented for 12 countries with the maximum infant mortality rate<a href="results.html#presented-for-12-countries-with-the-maximum-infant-mortality-rate" class="anchor-section" aria-label="Anchor link to header"></a></h6>
+</div>
+<div id="economic-indicators" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Economic Indicators<a href="results.html#economic-indicators" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Next we try to gauge the economic landscape of the world by analyzing two indicators - GDP (through GDP and GDP per Capita) and Income Disparity (through Income share held by highest 20% and Income share held by lowest 20%).</p>
+<div id="gross-domestic-product" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Gross Domestic Product<a href="results.html#gross-domestic-product" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>According to <img src="https://en.wikipedia.org/wiki/Gross_domestic_product" alt="wikipedia" />, Gross domestic product (GDP) is a monetary measure of the market value of all the final goods and services produced and sold (not resold) in a specific time period by countries. We use both GDP and GDP per capita as we want to compare both national economies on the international market (GDP) and living standards between nations (GDP per capita).</p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Initially, we plot the overall GDP of the world over the years by aggregating individual GDP values. We observe that overall the GDP of the world has risen. Obviously, this trend is expected as the world economy has grown, and more and more countries have started contributing. This is backed by the reduction in the number of missing values over the years. Further, we observe three significant dips in the overall GDP.</p>
+<ol style="list-style-type: decimal">
+<li>Around 2008 (red), the world witnessed the Great Depression.</li>
+<li>In 2014 (blue), there was another financial crisis observed in Russia, Brazil where prices of oil barrels dropped by nearly 40%.</li>
+<li>In 2019 (green), humanity faced its biggest challenge in Covid-19.</li>
+</ol>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="income-disparity" class="section level3 hasAnchor" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Income Disparity<a href="results.html#income-disparity" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<!-- parallel coordinates plot,  -->
 
 </div>
 </div>
