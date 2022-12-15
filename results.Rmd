@@ -10,6 +10,8 @@ library(ggplot2)
 library(tidyr)
 library(forcats)
 library(ggpubr)
+library(GGally)
+library(plotly)
 ```
 
 <!-- Reading the Data, Converting to Long format -->
@@ -91,7 +93,6 @@ df.long %>%
 
 ```
 
-hello!
 
 <!-- Line Plots with Facets showing multiple mortality rates of countries over the years -->
 
@@ -250,7 +251,6 @@ ggpubr::ggarrange(p1, p2, ncol = 1)
 ```
 
 ```{r}
-
 df.long %>%
   filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Year == '2020') %>%
   mutate(Value = coalesce(Value, 0),
@@ -295,3 +295,43 @@ ggarrange(p1, p2, ncol = 2, common.legend = TRUE)
 ```
 
 
+
+
+--->
+Created a Parallel Coordinates Plot with 5 indicators to compare environmental trends in these         multivariate continuous variables. 
+
+Indicators used are as follows:
+     1. Agricultural land (% of land area) - AG.LND.AGRI.ZS
+     2. Child employment in agriculture (% of economically active children ages 7-14) - SL.AGR.0714.ZS
+     3. CO2 emissions (metric tons per capita) - EN.ATM.CO2E.PC
+     4. Forest area (% of land area) - AG.LND.FRST.ZS
+     5. Fossil fuel energy consumption (% of total) - EG.USE.COMM.FO.ZS
+--->
+
+``` {r}
+df.environment <- df.long %>% 
+  filter(Indicator.Code %in% c('AG.LND.AGRI.ZS',
+                               'SL.AGR.0714.ZS', 
+                               'EN.ATM.CO2E.PC',
+                               'AG.LND.FRST.ZS',
+                               'EG.USE.COMM.FO.ZS')) %>% 
+  group_by(Indicator.Name)
+
+df.agriland = df.environment %>% filter(Indicator.Code == 'AG.LND.AGRI.ZS') %>% 
+  subset(select = c('Country.Name', 'Country.Code', 'Value')) %>% rename("AgriLand_%" = "Value")
+df.child_agri = df.environment %>% filter(Indicator.Code == 'SL.AGR.0714.ZS') %>% 
+  subset(select = 'Value') %>% rename("child_agri_employed_%" = "Value")
+df.co2 = df.environment %>% filter(Indicator.Code == 'EN.ATM.CO2E.PC') %>% 
+  subset(select = 'Value') %>% rename("CO2_tonne_pc" = "Value")
+df.forest_area = df.environment %>% filter(Indicator.Code == 'AG.LND.FRST.ZS') %>% 
+  subset(select = 'Value') %>% rename("forest_area_%" = "Value")
+df.fossil_energy = df.environment %>% filter(Indicator.Code == 'EG.USE.COMM.FO.ZS') %>% 
+  subset(select = 'Value') %>% rename("fossil_fuel_%" = "Value")
+
+df.pcp = cbind(df.agriland, df.child_agri, df.co2, df.forest_area, df.fossil_energy) 
+df.pcp_frac = df.pcp%>% sample_frac(0.005)
+
+ggparcoord(df.pcp, columns=3:7, groupColumn=2, alpha=0.15, scale='uniminmax',splineFactor=10,
+           title = "Global Environmental Trends through a splined-PCP")
+```
+                                                     
