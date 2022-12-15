@@ -69,7 +69,7 @@
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">SHORT TITLE HERE</a></li>
+<li><a href="./">EDAV for WDI</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
@@ -105,6 +105,7 @@
 <li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#gross-domestic-product"><i class="fa fa-check"></i><b>4.2.1</b> Gross Domestic Product</a></li>
 <li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#income-disparity"><i class="fa fa-check"></i><b>4.2.2</b> Income Disparity</a></li>
 </ul></li>
+<li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#environmental-indicators"><i class="fa fa-check"></i><b>4.3</b> Environmental Indicators</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>5</b> Interactive component</a></li>
 <li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a></li>
@@ -135,7 +136,7 @@
 <p>In the following subsections, we are going to visualize various plots depicting and comparing yearly trends for various indicators. We will also be comparing certain indicators across countries to understand the overall status of development around the world.</p>
 <div id="mortality-rates" class="section level3 hasAnchor" number="4.1.1">
 <h3><span class="header-section-number">4.1.1</span> Mortality Rates<a href="results.html#mortality-rates" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>We start off our discussion with mortality rates. Mortality rate is typically expressed in units of deaths per 1,000 individuals per year <img src="https://en.wikipedia.org/wiki/Mortality_rate" alt="(wikipedia)" />. The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:</p>
+<p>We start off our discussion with mortality rates. Mortality rate is typically expressed in units of deaths per 1,000 individuals per year <a href="https://en.wikipedia.org/wiki/Mortality_rate">(wikipedia)</a>. The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:</p>
 <ol style="list-style-type: decimal">
 <li>Mortality rate, adult, male (per 1,000 male adults)</li>
 <li>Mortality rate, adult, female (per 1,000 female adults)</li>
@@ -152,11 +153,13 @@ Since the number of countries are huge, we just consider the top few countries i
 </ol>
 <p>The above plot shows the countries that have the maximum mortality rates. To view the trend of mortality rates over the years, we handpick these countries and draw line charts for various mortality rates. We use the trick of faceting to make the process of reading the graph easy and aesthetic at the same time.</p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>We observe the following:
-1. The mortality rates have decreased over the years for all countries over the years.
-2. As discussed previously, the adult male mortality rate is greater than adult female mortality rate which in turn is greater than infant mortality rates.
-3. There was a rise in mortality rates from 1990 to 2000 for almost all countries.
-4. This rise could be attributed to a myriad of region specific reasons - new diseases/illnesses, lack of physical activity, increased tobacco usage, lack of proper nutrition, among others.</p>
+<p>We observe the following:</p>
+<ol style="list-style-type: decimal">
+<li>The mortality rates have decreased over the years for all countries over the years.</li>
+<li>As discussed previously, the adult male mortality rate is greater than adult female mortality rate which in turn is greater than infant mortality rates.</li>
+<li>There was a rise in mortality rates from 1990 to 2000 for almost all countries.</li>
+<li>This rise could be attributed to a myriad of region specific reasons - new diseases/illnesses, lack of physical activity, increased tobacco usage, lack of proper nutrition, among others.</li>
+</ol>
 </div>
 <div id="life-expectancy" class="section level3 hasAnchor" number="4.1.2">
 <h3><span class="header-section-number">4.1.2</span> Life Expectancy<a href="results.html#life-expectancy" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -170,22 +173,27 @@ Since the number of countries are huge, we just consider the top few countries i
 <p>Next we try to gauge the economic landscape of the world by analyzing two indicators - GDP (through GDP and GDP per Capita) and Income Disparity (through Income share held by highest 20% and Income share held by lowest 20%).</p>
 <div id="gross-domestic-product" class="section level3 hasAnchor" number="4.2.1">
 <h3><span class="header-section-number">4.2.1</span> Gross Domestic Product<a href="results.html#gross-domestic-product" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>According to <img src="https://en.wikipedia.org/wiki/Gross_domestic_product" alt="wikipedia" />, Gross domestic product (GDP) is a monetary measure of the market value of all the final goods and services produced and sold (not resold) in a specific time period by countries. We use both GDP and GDP per capita as we want to compare both national economies on the international market (GDP) and living standards between nations (GDP per capita).</p>
+<p>According to <a href="https://en.wikipedia.org/wiki/Gross_domestic_product">wikipedia</a>, Gross domestic product (GDP) is a monetary measure of the market value of all the final goods and services produced and sold (not resold) in a specific time period by countries. We use both GDP and GDP per capita as we want to compare both national economies on the international market (GDP) and living standards between nations (GDP per capita).</p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>Initially, we plot the overall GDP of the world over the years by aggregating individual GDP values. We observe that overall the GDP of the world has risen. Obviously, this trend is expected as the world economy has grown, and more and more countries have started contributing. This is backed by the reduction in the number of missing values over the years. Further, we observe three significant dips in the overall GDP.</p>
 <ol style="list-style-type: decimal">
 <li>Around 2008 (red), the world witnessed the Great Depression.</li>
 <li>In 2014 (blue), there was another financial crisis observed in Russia, Brazil where prices of oil barrels dropped by nearly 40%.</li>
-<li>In 2019 (green), humanity faced its biggest challenge in Covid-19.</li>
+<li>In 2019 (green), humanity faced its biggest challenge in Covid-19 leading to a collapse of the stock market.</li>
 </ol>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>We use choropleth.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="income-disparity" class="section level3 hasAnchor" number="4.2.2">
 <h3><span class="header-section-number">4.2.2</span> Income Disparity<a href="results.html#income-disparity" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+</div>
+<div id="environmental-indicators" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Environmental Indicators<a href="results.html#environmental-indicators" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <!-- parallel coordinates plot,  -->
 
-</div>
 </div>
 </div>
             </section>

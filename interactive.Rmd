@@ -1,14 +1,16 @@
 # Interactive component
 
+Hello world!
 ```{r eval = FALSE, include = FALSE}
-
-# select a subset of countries and compare their GDP per Capita over different years
-library(dplyr)
-write.csv(df.long %>%
-  filter(Country.Name %in% c('United States', 'India') &
-           Indicator.Code == 'NY.GDP.PCAP.CD') %>% select(Country.Name, Year, Value), 'd3_data/interactive_data.csv')
+# 
+# # select a subset of countries and compare their GDP per Capita over different years
+# library(dplyr)
+# write.csv(df.long %>%
+#   filter(Year == 2020 &
+#            Indicator.Code == 'NY.GDP.PCAP.CD') %>% select(Country.Name, Value) %>% na.omit() %>% slice_sample(n = 50), 'd3_data/interactive_data.csv', row.names = FALSE)
 ```
 
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
   * {
     font-family: sans-serif;
@@ -19,16 +21,7 @@ write.csv(df.long %>%
   }
 </style> 
 
-<div style="padding-left: 100px">
-  <h3></h3>
-  <p>Each dot represents a person.</p>
-  <svg id="svg1"></svg>
-  <div id="slider" style="padding-left: 16px;">
-  <input type="range" step="10">
-  </div>
-  <svg id="svg2"></svg>
-</div>
+<div id = 'myviz'></div>
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="interactive.js"></script>
 <br>

@@ -1,20 +1,37 @@
-const w = 350;
-const h = 330;
-const slider_h = 40;
-const margin = {left: 25, top: 5, right: 25, bottom: 25};
-const innerWidth = w - margin.left - margin.right;
-const innerHeight = h - margin.top - margin.bottom;
+const w = 400;
+const h = 400;
 
-const rowConverter = function (d) {
-  return {
-      country: d.Country.Name,
-      year: +d.Year,
-      value: d.Value
-    }
-};  
+const dataset;
+d3.csv("d3_data/interactive_data.csv").then(function(data){
+  dataset = data;
+  creatChart();
+});
 
-
-d3.csv('d3.csv', rowConverter)
-  .then(function(data) {
-    console.log(data)
-  })
+function creatChart() {
+  const svg = d3.select("#myviz")
+              .append("svg")
+              .attr("width", w)
+              .attr("heigh", h);
+              
+  const countries = dataset.map(d => d.Country.Name)
+  const maxGDP = dataset.map(d => max(d.Value))  
+  const bandWidth = w / dataset.length - 1;
+  
+  const bandScale = d3.scaleBand()
+                      .domain(countries)
+                      .range([0, w])
+                      
+  const heightScale = d3.scaleLinear()
+                        .domain([0,maxGDP])
+                        .range([0,h])
+  
+  svg.selectAll("rect")
+     .data(dataset)
+     .enter()
+     .append("rect")
+     .attr("x", (d, i) => bandScale(d.Country.Name))
+     .attr("y", d => h - heightScale(d.Value))
+     .attr("width", d => bandScale.bandwidth())
+     .attr("height", d => d.Value)
+     .attr("fill", d => d.Color)
+}
