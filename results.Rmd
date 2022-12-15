@@ -1,6 +1,6 @@
 # Results
 
-```{r include=FALSE}
+```{r}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
@@ -11,8 +11,6 @@ library(tidyr)
 library(forcats)
 library(ggpubr)
 ```
-
-<!-- Reading the Data, Converting to Long format -->
 
 ```{r}
 df <- read.csv('data/WDIData.csv')
@@ -28,9 +26,22 @@ df.long <- df %>% pivot_longer(cols = !c(Country.Name,
 df.long$Year <- sapply(df.long$Year, function(x){as.numeric(substr(x, 2, 5))})
 ```
 
-<!-- Cleveland Dot Plot showing Mortality Rates for 2020 -->
+We proposed to analyze various social, economic, and environmental indicators for various countries over the years. We have broken down our results into three distinct sections with each of them discussing a few relevant indicators. 
 
-<!-- Sorted in descending order on Male Mortality Rates -->
+### Social Indicators
+
+In the following subsections, we are going to visualize various plots depicting and comparing yearly trends for various indicators. We will also be comparing certain indicators across countries to understand the overall status of development around the world. 
+
+#### Mortality Rates
+
+We start off our discussion with mortality rates. Mortality rate is typically expressed in units of deaths per 1,000 individuals per year ![(wikipedia)](https://en.wikipedia.org/wiki/Mortality_rate). The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:
+
+1. Mortality rate, adult, male (per 1,000 male adults)
+2. Mortality rate, adult, female (per 1,000 female adults)
+3. Mortality rate, infant male (per 1,000 live births)
+4. Mortality rate, infant female (per 1,000 live births)
+
+One thing that strikes the eye immediately is that the mortality rate for infant male or infant female would be less than the mortality rate of adult male or adult female. This is due to the definition of the indicators for infants. They are calculating number of deaths of male and female infants per 1000 live births whereas adult mortality rates are being recorded per 1000 adults of the respective gender. However, the infant mortality rates would be less than adult mortality rates due to the nature of life. 
 
 ```{r}
 df.long %>% 
@@ -38,7 +49,7 @@ df.long %>%
   mutate(Value = coalesce(Value, 0),
          Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
   group_by(Country.Name, Indicator.Code) %>%
-  mutate(Value = mean(Value)) %>% 
+  mutate(Value = median(Value)) %>% 
   ungroup() %>%
   ggplot(aes(Value,
              fct_reorder2(Country.Name,
@@ -57,7 +68,7 @@ df.long %>%
   mutate(Value = coalesce(Value, 0),
          Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
   group_by(Country.Name, Indicator.Code) %>%
-  mutate(Value = mean(Value)) %>% 
+  mutate(Value = median(Value)) %>% 
   ungroup() %>%
   ggplot(aes(Value,
              fct_reorder2(Country.Name,
@@ -69,33 +80,19 @@ df.long %>%
        y = 'Country Name', 
        title = 'Infant Mortality Rates for 2020') + 
   theme_bw(8)
-# 
-# df.long %>% 
-#   filter(Indicator.Code %in% c('SH.DYN.MORT.FE','SH.DYN.MORT.MA')  & Year == 2020) %>%
-#   mutate(Value = coalesce(Value, 0),
-#          Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
-#   group_by(Country.Name, Indicator.Code) %>%
-#   mutate(Value = mean(Value)) %>% 
-#   ungroup() %>%
-#   ggplot(aes(Value,
-#              fct_reorder2(Country.Name,
-#                           Indicator.Code == 'SH.DYN.MORT.MA', 
-#                           Value, .desc = FALSE),
-#              color = Indicator.Name)) + 
-#   geom_point() + 
-#   labs(x = 'Rate', 
-#        y = 'Country Name', 
-#        title = 'Under-5 Mortality Rates for 2020') + 
-#   theme_bw()
-
 
 ```
+Since the number of countries are huge, we just consider the top few countries in terms of largest mortality rates. Further, we use Cleveland dot plots as they provide an effective way to visualize a categorical variable (Country.Name) and a continuous value (Mortality Rate) corresponding to each category. The last few countries have been lumped together and the median was considered for them. The categories are arranged in the descending order of male mortality rates. 
 
-<!-- Line Plots with Facets showing multiple mortality rates of countries over the years -->
+We observe the following:
 
-<!-- Presented for 12 countries with the maximum infant mortality rate -->
+1. African nations have the highest mortality rates for both infants and adults. 
+2. Male mortality rates are generally higher than female mortality rates. 
 
-```{r}
+The above plot shows the countries that have the maximum mortality rates. To view the trend of mortality rates over the years, we handpick these countries and draw line charts for various mortality rates. We use the trick of faceting to make the process of reading the graph easy and aesthetic at the same time. 
+
+
+```{r fig.height=5}
 
 countries.mortality <- (df.long %>% 
   filter(Indicator.Code %in% c('SP.DYN.IMRT.MA.IN')  & Year == 2020) %>%
@@ -123,109 +120,21 @@ df.long %>%
   theme_bw(8)
 ```
 
-<!-- Missing Values -->
+We observe the following:
+1. The mortality rates have decreased over the years for all countries over the years. 
+2. As discussed previously, the adult male mortality rate is greater than adult female mortality rate which in turn is greater than infant mortality rates. 
+3. There was a rise in mortality rates from 1990 to 2000 for almost all countries. 
+4. This rise could be attributed to a myriad of region specific reasons - new diseases/illnesses, lack of physical activity, increased tobacco usage, lack of proper nutrition, among others. 
 
-```{r}
+#### Life Expectancy
 
-df.long %>%
-  group_by(Country.Name) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(desc(percent)) %>%
-  slice(1:15) %>%
-  ggplot(aes(fct_reorder(Country.Name, percent, .desc = TRUE), percent)) +
-  geom_col(fill = 'skyblue') + 
-  labs(x = 'Country Name', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Country') +
-  guides(x = guide_axis(angle = 45)) + 
-  theme_bw(8)
+#### Literacy Rates
 
-```
+### Economic Indicators
 
-```{r}
+Next we try to gauge the economic landscape of the world by analyzing two indicators - GDP (through GDP and GDP per Capita) and Income Disparity (through Income share held by highest 20% and Income share held by lowest 20%). 
 
-df.long %>%
-  group_by(Year) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(desc(percent)) %>%
-  # slice(1:15) %>%
-  ggplot(aes(Year, percent)) +
-  geom_col(fill = 'skyblue', width = 0.5) + 
-  labs(x = 'Year', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Year') +
-  theme_bw(8)
-
-```
-
-```{r}
-
-df.long %>%
-  group_by(Indicator.Code) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(desc(percent)) %>%
-  # mutate(Indicator.Code = fct_reorder(Indicator.Code, percent, .desc = TRUE)) %>%
-  slice(1:20) %>%
-  ggplot(aes(fct_reorder(Indicator.Code, percent, .desc = TRUE), percent)) +
-  geom_col(fill = 'skyblue', width = 0.8) + 
-  labs(x = 'Indicator', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Indicator (Most)') +
-  guides(x = guide_axis(angle = 45)) + 
-  theme_bw(8)
-
-```
-
-```{r}
-
-df.long %>%
-  group_by(Indicator.Code) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(percent) %>%
-  slice(1:20) %>%
-  ggplot(aes(fct_reorder(Indicator.Code, percent), percent)) +
-  geom_col(fill = 'skyblue', width = 0.7) + 
-  labs(x = 'Indicator', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Indicator (Least)') +
-  guides(x = guide_axis(angle = 45)) +
-  theme_bw(8)
-
-```
-
-``` {r}
-
-df.long %>% 
-  filter(Indicator.Code %in% c('EN.ATM.CO2E.PC',
-                               'AG.LND.IRIG.AG.ZS', 
-                               'EG.USE.COMM.FO.ZS',
-                               'SP.DYN.AMRT.FE',
-                               'SP.DYN.AMRT.MA',
-                               'SP.DYN.IMRT.FE.IN',
-                               'SP.DYN.IMRT.MA.IN',
-                               # 'SH.DYN.MORT.FE',
-                               # 'SH.DYN.MORT.MA', 
-                               'SL.TLF.0714.FE.ZS', 
-                               'SL.TLF.0714.MA.ZS', 
-                               'NY.GDP.PCAP.CD', 
-                               'SI.DST.FRST.20', 
-                               'SI.DST.05TH.20')) %>%
-  group_by(Indicator.Name, Year) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>% 
-  ungroup() %>%
-  ggplot(aes(Year, y = fct_reorder(Indicator.Name, percent, sum), fill = percent)) +
-  geom_tile(color = 'white') +
-  scale_fill_gradient2(low = "white", high ="red") + 
-  labs(x = 'Year', 
-       y = 'Indicator Name', 
-       title = 'Missing Values for Selected Indicators') + 
-  theme_bw(8)
-
-```
+#### Gross Domestic Product
 
 ```{r}
 # GDP

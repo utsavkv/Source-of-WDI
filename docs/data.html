@@ -23,7 +23,7 @@
 <meta name="author" content="Priyanka Balakumar, Utsav Vachhani, Eklavya Jain" />
 
 
-<meta name="date" content="2022-11-01" />
+<meta name="date" content="2022-12-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -81,8 +81,15 @@
 <li class="chapter" data-level="3" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>3</b> Data</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="data.html"><a href="data.html#sources"><i class="fa fa-check"></i><b>3.1</b> Sources</a></li>
-<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a></li>
-<li class="chapter" data-level="3.3" data-path="data.html"><a href="data.html#missing-value-analysis"><i class="fa fa-check"></i><b>3.3</b> Missing value analysis</a></li>
+<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data.html"><a href="data.html#dataset-summary"><i class="fa fa-check"></i><b>3.2.1</b> Dataset Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="data.html"><a href="data.html#missing-value-analysis"><i class="fa fa-check"></i><b>3.3</b> Missing value analysis</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="data.html"><a href="data.html#missing-values-by-country"><i class="fa fa-check"></i><b>3.3.1</b> Missing Values by Country</a></li>
+<li class="chapter" data-level="3.3.2" data-path="data.html"><a href="data.html#missing-values-by-indicator"><i class="fa fa-check"></i><b>3.3.2</b> Missing values by Indicator</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a></li>
 <li class="chapter" data-level="5" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>5</b> Interactive component</a></li>
@@ -113,10 +120,73 @@
 </div>
 <div id="cleaning-transformation" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Cleaning / transformation<a href="data.html#cleaning-transformation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The definition of tidy depends on the underlying task. Our data (accessed through a .csv file) was not in tidy format. Consequently, we transformed it into the long format to be compatible with ggplot2 in R.</p>
+<p>The schema for the above loaded dataset is:</p>
+<p>Columns:</p>
+<ul>
+<li>Country.Name</li>
+<li>Country.Code</li>
+<li>Indicator.Name</li>
+<li>Indicator.Code</li>
+<li>1960</li>
+<li>1961</li>
+<li>…</li>
+<li>2020</li>
+<li>2021</li>
+</ul>
+<p>We convert it to long format such that the new data frame has columns:</p>
+<ul>
+<li>Country.Name</li>
+<li>Country.Code</li>
+<li>Indicator.Name</li>
+<li>Indicator.Code</li>
+<li>Year</li>
+<li>Value</li>
+</ul>
+<p>This way we can use it in R to create visualizations using ggplot2. The following piece of code does the following.</p>
+<div id="dataset-summary" class="section level3 hasAnchor" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Dataset Summary<a href="data.html#dataset-summary" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The dataset has data for:</p>
+<ol style="list-style-type: decimal">
+<li>266 Countries</li>
+<li>1442 Indicators</li>
+<li>62 Years</li>
+</ol>
+</div>
 </div>
 <div id="missing-value-analysis" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Missing value analysis<a href="data.html#missing-value-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We observe that the data has a lot of missing values. Given the vastness of the data, it is expected. We think the missing values are because of the following potential reasons:
+1. Not all countries have had definite metrics to measure indicator performances since 1960.
+2. Data collection is a tedious task and there can be inconsistencies while doing that.
+3. Some indicators might have become relevant only after a certain year.</p>
+<p>Further, we draw up some visualizations to observe these trends and confirm our initial hypotheses with regards to missing values.</p>
+<div id="missing-values-by-country" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Missing Values by Country<a href="data.html#missing-values-by-country" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Given that we have data for around 266 Countries, it is expected that not all countries will have all values. To show this, we draw a bar chart depicting the percentage of missing values by country arranged in a non-increasing manner. We observe the following:
+1. We see that there are a few entries whose country is specified as Not Classified.
+2. Since the countries are arranged in decreasing order of the percentage of missing values, it is evident that none of the countries have 0% missing values. However, this stat is not significant as some countries have come under the radar of international scope only recently.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>We will draw a magnified version of this plot by considering the top 20 countries in terms of the most missing values.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>We observe that:
+1. There is a category for country name which is called not specified and (almost) all its values are missing.
+2. The other countries/regions with such a high percentage of missing values are small countries. They are under-developed or developing nations, and might have come into existence only recently.</p>
+</div>
+<div id="missing-values-by-indicator" class="section level3 hasAnchor" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Missing values by Indicator<a href="data.html#missing-values-by-indicator" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>After looking at missing values from the perspective of Countries, we now try to look at them from the point of view of indicators. We plot the percentage of missing values in a non-decreasing manner. We observe the following:
+1. There are few to none gaps in the barplot indicating that mostly all indicators have missing values for some country or for some year.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>We analyze two tails of the below plot in a magnified version and understand why certain indicators have a high or a low percentage of missing values.</p>
+<p>Consider the front tail of the above plot. It is plotted in its magnified form below.
+<img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+We can observe from the above plot that no indicator has 0% missing values. Naturally, the most basic indicator ‘Population’ has the least percentage of missing values. These missing values can be due to lack of data collection for some countries who only became relevant recently. Other indicators like land area, birth rate, death rate, etc., also realize a low percentage of missing values due to their pervasiveness and ease of collection. Let’s analyze the rear tail of the chart now.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+Observe that these indicators are somewhat complicated. The indicators plotted in the above plot are more people specific, for example, ‘Number of people spending more than 25% of household consumption or income on out-of-pocket health care expenditure’. Getting this data is a difficult job. In developed countries, it is possible that such stats are measurable given the cohesive infrastructure they have built. But in under-developed nations, there is no relevance of such indicators. A similar reasoning can be given for other indicators plotted above.</p>
+<!-- Now, to compare the relationship of missing value for indicators and countries, we would form certain hypothesis. For example, say that the indicators with the least percentage of missing values have missing values because of the countries with the maximum number of missing values. We can do this by drawing mosaic plots between the two variables. For the sake of simplicity, we only consider five indicators having the least percentage of missing values and five countries having the most percentage of missing values.  -->
 
+</div>
 </div>
 </div>
             </section>
@@ -179,20 +249,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>

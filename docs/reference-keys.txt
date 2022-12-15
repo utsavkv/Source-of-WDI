@@ -14,3 +14,6 @@ cleveland-dot-plot-showing-mortality-rates-for-2020
 sorted-in-descending-order-on-male-mortality-rates
 line-plots-with-facets-showing-multiple-mortality-rates-of-countries-over-the-years
 presented-for-12-countries-with-the-maximum-infant-mortality-rate
+dataset-summary
+missing-values-by-country
+missing-values-by-indicator
