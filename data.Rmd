@@ -6,9 +6,9 @@ We have used the World Development Indicators dataset, a compilation of relevant
 
 It is the most current and accurate global development data available including national, regional and global estimates and is updated regularly depending on new data available on the indicators.  There are two ways for users to access this data: a bulk download (files are revised whenever WDI is updated) or via the World Bank Indicators API. For our project, we have downloaded the data as it can be imported into R with ease, is readily accessible and since it has a quarterly update frequency, we can easily update the data file every quarter manually. 
 
-The World Development Indicators dataset includes 1,600 indicators for a total of 217 economies and more than 45 country groups. The dataset consists of 383,572 unique records.  Data for most indicators extends back more than 50 years, from 1960 to 2020 ![(4)](https://datatopics.worldbank.org/world-development-indicators/user-guide.html). The indicators are primarily organized into six overarching categories: Poverty and Inequality, People, Environment, Economy, States and Markets, and Global Links. 
+The World Development Indicators dataset includes 1,600 indicators for a total of 217 economies and more than 45 country groups. The dataset consists of 383,572 unique records.  Data for most indicators extends back more than 50 years, from 1960 to 2020 [(4)](https://datatopics.worldbank.org/world-development-indicators/user-guide.html). The indicators are primarily organized into six overarching categories: Poverty and Inequality, People, Environment, Economy, States and Markets, and Global Links. 
 
-A known issue prior to analyzing this dataset was data inconsistency. There are a number of reasons as to why data is not available for a given indicator across all countries and years. For certain indicators, data is collected from sporadic surveys that are only conducted every few years. Some indicators such as ‘Balance of Payments’ only started in 2005 because it was only initiated that year; thus no data exists for the earlier years. On the other hand, some data is also inconsistent at a country level. For example, countries  such as North Korea, Somalia, certain Caribbean and Pacific islands, etc. do not report data consistently due to conflict, lack of statistical capacity, or other reasons. Lastly, countries such as South Sudan, Eritrea, etc. do not have data from 1960 simply because they did not exist ![(5)](https://datahelpdesk.worldbank.org/knowledgebase/topics/19285-data-not-available). 
+A known issue prior to analyzing this dataset was data inconsistency. There are a number of reasons as to why data is not available for a given indicator across all countries and years. For certain indicators, data is collected from sporadic surveys that are only conducted every few years. Some indicators such as ‘Balance of Payments’ only started in 2005 because it was only initiated that year; thus no data exists for the earlier years. On the other hand, some data is also inconsistent at a country level. For example, countries  such as North Korea, Somalia, certain Caribbean and Pacific islands, etc. do not report data consistently due to conflict, lack of statistical capacity, or other reasons. Lastly, countries such as South Sudan, Eritrea, etc. do not have data from 1960 simply because they did not exist [(5)](https://datahelpdesk.worldbank.org/knowledgebase/topics/19285-data-not-available). 
 
 ## Cleaning / transformation
 The definition of tidy depends on the underlying task. Our data (accessed through a .csv file) was not in tidy format. Consequently, we transformed it into the long format to be compatible with ggplot2 in R. 
@@ -106,7 +106,9 @@ df.long %>%
        y = 'Percent of Missing Values',
        title = 'Missing Values by Country') +
   guides(x = guide_axis(angle = 90)) + 
-  theme_bw(4)
+  theme_bw(8) + 
+  theme(axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank())
 
 ```
 
@@ -152,7 +154,7 @@ df.long %>%
        y = 'Percent of Missing Values',
        title = 'Missing Values by Indicator (Least)') +
   guides(x = guide_axis(angle = 90)) +
-  theme_bw(4) + 
+  theme_bw(8) + 
   theme(axis.text.x = element_blank(), 
         axis.ticks.x = element_blank())
 

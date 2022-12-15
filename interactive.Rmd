@@ -1,12 +1,12 @@
 # Interactive component
 
-```{r}
+```{r eval = FALSE, include = FALSE}
 
 # select a subset of countries and compare their GDP per Capita over different years
 library(dplyr)
 write.csv(df.long %>%
-  filter(Country.Name %in% c('France', 'Russia', 'United States', 'India', 'Monaco', 'Switzerland') &
-           Indicator.Code == 'NY.GDP.PCAP.CD') %>% select(Country.Name, Year, Value), 'data/d3.csv')
+  filter(Country.Name %in% c('United States', 'India') &
+           Indicator.Code == 'NY.GDP.PCAP.CD') %>% select(Country.Name, Year, Value), 'd3_data/interactive_data.csv')
 ```
 
 <style>
@@ -27,7 +27,6 @@ write.csv(df.long %>%
   <input type="range" step="10">
   </div>
   <svg id="svg2"></svg>
-  <p class="source">Data source: http://www.demographia.com/dm-nyc.htm</p>
 </div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>

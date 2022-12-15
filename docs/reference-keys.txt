@@ -25,3 +25,4 @@ literacy-rates
 economic-indicators
 gross-domestic-product
 income-disparity
+environmental-indicators

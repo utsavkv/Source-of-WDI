@@ -72,6 +72,9 @@ library(ggplot2)
 library(tidyr)
 library(forcats)
 library(ggpubr)
+
+library(GGally)
+library(plotly)
 ```
 
 ```{r}
@@ -96,7 +99,7 @@ In the following subsections, we are going to visualize various plots depicting 
 
 ### Mortality Rates
 
-We start off our discussion with mortality rates. Mortality rate is typically expressed in units of deaths per 1,000 individuals per year ![(wikipedia)](https://en.wikipedia.org/wiki/Mortality_rate). The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:
+We start off our discussion with mortality rates. Mortality rate is typically expressed in units of deaths per 1,000 individuals per year [(wikipedia)](https://en.wikipedia.org/wiki/Mortality_rate). The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:
 
 1. Mortality rate, adult, male (per 1,000 male adults)
 2. Mortality rate, adult, female (per 1,000 female adults)
@@ -201,26 +204,27 @@ Next we try to gauge the economic landscape of the world by analyzing two indica
 
 ### Gross Domestic Product
 
-According to ![wikipedia](https://en.wikipedia.org/wiki/Gross_domestic_product), Gross domestic product (GDP) is a monetary measure of the market value of all the final goods and services produced and sold (not resold) in a specific time period by countries. We use both GDP and GDP per capita as we want to compare both national economies on the international market (GDP) and living standards between nations (GDP per capita). 
+According to [wikipedia](https://en.wikipedia.org/wiki/Gross_domestic_product), Gross domestic product (GDP) is a monetary measure of the market value of all the final goods and services produced and sold (not resold) in a specific time period by countries. We use both GDP and GDP per capita as we want to compare both national economies on the international market (GDP) and living standards between nations (GDP per capita). 
 
 ```{r}
 # GDP
 
-MIL <- 1000000000000
+TRIL <- 1000000000000
 
 df.gdp <- df.long %>% 
   filter(Indicator.Code == 'NY.GDP.MKTP.CD') %>% 
   group_by(Year) %>%
-  summarise(GDP = sum(Value, na.rm = TRUE), Missing = sum(is.na(Value))*100/n()) %>%
+  summarise(GDP = sum(Value, na.rm = TRUE)/TRIL,
+            Missing = sum(is.na(Value))*100/n()) %>%
   ungroup() 
 
 p1 <- df.gdp %>%
-  ggplot(aes(Year, GDP/MIL)) + 
+  ggplot(aes(Year, GDP)) + 
   geom_line() + 
   geom_vline(aes(xintercept = 2008), color = 'red') + 
   annotate(geom = "text",
            x = 2008,
-           y = 2000, 
+           y = 200, 
            label = "2008",
            color = "red", 
            angle = 90,
@@ -229,7 +233,7 @@ p1 <- df.gdp %>%
   geom_vline(aes(xintercept = 2014), color = 'blue') + 
   annotate(geom = "text",
            x = 2014,
-           y = 2000,
+           y = 200,
            label = "2014",
            color = "blue",
            angle = 90, 
@@ -238,7 +242,7 @@ p1 <- df.gdp %>%
   geom_vline(aes(xintercept = 2019), color = 'darkgreen') + 
   annotate(geom = "text",
            x = 2019,
-           y = 2000,
+           y = 200,
            label = "2019",
            color = "darkgreen",
            angle = 90,
@@ -250,7 +254,10 @@ p1 <- df.gdp %>%
   theme_bw(8)
 
 p2 <- df.gdp %>%
-  ggplot(aes(Year, Missing)) + geom_col(fill = 'red', alpha = 0.5) + labs(y = '% of missing values') + theme_bw(8)
+  ggplot(aes(Year, Missing)) + 
+  geom_col(fill = 'red', alpha = 0.5) +
+  labs(y = '% of missing values') +
+  theme_bw(8)
 
 ggpubr::ggarrange(p1, p2, ncol = 1)
  
@@ -286,14 +293,14 @@ df.long %>%
 We use choropleth.
 
 ```{r}
-library(choroplethr)
-choroplethr_wdi(
-  code = "NY.GDP.PCAP.CD",
-  year = 2020,
-  title = "2020 US GDP per Capita",
-  num_colors = 7,
-  zoom = NULL
-)
+# library(choroplethr)
+# choroplethr_wdi(
+#   code = "NY.GDP.PCAP.CD",
+#   year = 2020,
+#   title = "2020 US GDP per Capita",
+#   num_colors = 7,
+#   zoom = NULL
+# )
 ```
 
 
@@ -309,15 +316,23 @@ countries.gdp <- (df.long %>%
 p1 <- df.long %>%
   filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Country.Name %in% countries.gdp) %>%
   mutate(Country.Name = fct_reorder2(Country.Name, Year == '2020', Value)) %>%
-  ggplot(aes(Year, Value, color = Country.Name)) + geom_line() + labs(title = 'GDP per Capita (current USD)') + theme_bw(8)
+  ggplot(aes(Year, Value, color = Country.Name)) +
+  geom_line() + 
+  labs(title = 'GDP per Capita (current USD)') + 
+  theme_bw(8)
 
-
-# update color of bar plot by releveling factors
-p2 <- df.long %>%
+df.gdp.bar <- df.long %>%
   filter(Indicator.Code == 'NY.GDP.MKTP.CD' & Country.Name %in% countries.gdp & Year == '2020') %>%
-  ggplot(aes(Country.Name, Value, fill = Country.Name)) + geom_col() + coord_flip() + labs(title = 'GDP (current USD)') + theme_bw(8) 
+  mutate(Country.Name = fct_relevel(Country.Name, levels = levels(as.factor(p1$data[[1]]))))
 
-ggarrange(p1, p2, ncol = 2, common.legend = TRUE)
+p2 <- df.gdp.bar %>%
+  ggplot(aes(fct_rev(Country.Name), Value*1000/TRIL, fill = Country.Name)) +
+  geom_col() + 
+  coord_flip() + 
+  labs(title = 'GDP (Current USD)', x = 'Country', y = 'GDP (Billions of Dollars)') +
+  theme_bw(8) 
+
+ggarrange(p1, p2, ncol = 2, common.legend = TRUE, legend = "bottom")
 ```
 
 ### Income Disparity
@@ -327,10 +342,6 @@ ggarrange(p1, p2, ncol = 2, common.legend = TRUE)
 ## Environmental Indicators
 
 ```{r}
-library(GGally)
-library(plotly)
-
-
 df.environment <- df.long %>% 
   filter(Indicator.Code %in% c('AG.LND.AGRI.ZS',
                                'SL.AGR.0714.ZS', 
@@ -352,27 +363,19 @@ df.fossil_energy = df.environment %>% filter(Indicator.Code == 'EG.USE.COMM.FO.Z
 df.pcp = cbind(df.agriland, df.child_agri, df.co2, df.forest_area, df.fossil_energy) 
 df.pcp_frac = df.pcp %>% sample_frac(0.005)
 ggparcoord(df.pcp, columns=3:7, groupColumn=2, alpha=0.15, scale='uniminmax',
-           title = "Global Environmental Trends through a splined-PCP")
+           title = "Global Environmental Trends through a splined-PCP") + theme_bw(8)
 ```
 
 <!-- parallel coordinates plot,  -->
 
 <!--chapter:end:results.Rmd-->
 
-```{r include=FALSE, cache=FALSE}
-knitr::opts_chunk$set(
-  echo = FALSE,
-  message = FALSE,
-  warning = FALSE
-)
-```
+
 # Interactive component
 
+Placeholder
 
-<script src="https://d3js.org/d3.v7.js"></script>
-<script>
-...
-</script>
+
 
 <!--chapter:end:interactive.Rmd-->
 
