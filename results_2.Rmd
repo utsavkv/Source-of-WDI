@@ -1,0 +1,204 @@
+# Results
+
+```{r include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(forcats)
+library(ggthemes)
+```
+
+
+<!-- Reading the Data, Converting to Long format -->
+
+```{r}
+df <- read.csv('data/WDIData.csv')
+if ('X' %in% names(df)) df <- select(df, -X)
+df.long <- df %>% pivot_longer(cols = !c(Country.Name,
+                                         Country.Code,
+                                         Indicator.Name, 
+                                         Indicator.Code),
+                               names_to = 'Year',
+                               values_to = 'Value')
+
+# cleaning year names
+df.long$Year <- sapply(df.long$Year, function(x){as.numeric(substr(x, 2, 5))})
+```
+
+
+```{r}
+sample_df <-df.long %>% 
+  filter(Indicator.Code %in% c('SP.DYN.LE00.FE.IN',
+                               'SP.DYN.LE00.MA.IN'
+                               ) & Year %in% c(1990))
+female_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.FE.IN")
+male_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.MA.IN")
+```
+
+```{r}
+colnames(female_df)[6] <- "female_life_expectancy"
+colnames(male_df)[6] <- "male_life_expectancy"
+life_expectancy = data.frame(female_df$Country.Name,female_df$female_life_expectancy,male_df$male_life_expectancy)
+```
+
+
+```{r}
+ggplot(life_expectancy,aes(x=male_df.male_life_expectancy, y=female_df.female_life_expectancy) )+
+geom_point(colour="white", fill="darkturquoise", shape=21, alpha=.55, size=5)+
+geom_abline(intercept = 0, slope=1)+
+scale_x_continuous(limits=c(35,80))+
+scale_y_continuous(limits=c(35,80))+
+labs(title="Life Expectancy at Birth by Country",
+     subtitle="1990, 266 countries",
+     x="Males",
+     y="Females")
+```
+```{r}
+sample_df <-df.long %>% 
+  filter(Indicator.Code %in% c('SP.DYN.LE00.MA.IN',
+                               'SP.DYN.LE00.FE.IN'
+                               ) & Year %in% c(1960,1980,2000,2020))
+female_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.FE.IN")
+male_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.MA.IN")
+```
+
+
+```{r}
+colnames(female_df)[6] <- "female_life_expectancy"
+colnames(male_df)[6] <- "male_life_expectancy"
+life_expectancy = data.frame(female_df$Year,female_df$Country.Name,female_df$female_life_expectancy,male_df$male_life_expectancy)
+```
+
+
+
+```{r}
+ggplot(life_expectancy,aes(x=male_df.male_life_expectancy, y=female_df.female_life_expectancy) )+
+geom_point(colour="white", fill="darkturquoise", shape=21, alpha=.55, size=5)+
+geom_abline(intercept = 0, slope=1)+
+scale_x_continuous(limits=c(35,80))+
+scale_y_continuous(limits=c(35,80))+
+labs(title="Life Expectancy at Birth by Country",
+     x="Males",
+     y="Females",
+     subtitle="266 countries",)+
+facet_wrap(~female_df.Year, scales = "free_x")
+
+```
+
+
+
+```{r fig.height=6}
+countries.life_expectancy <- (df.long %>% 
+  filter(Indicator.Code %in% c('SP.DYN.LE00.FE.IN')  & Year == 2020) %>%
+  arrange(desc(Value)) %>%
+  slice(1:12) %>% 
+  select(Country.Name) %>% as.vector())$Country.Name 
+
+
+df.long %>% 
+  filter(Indicator.Code %in% c('SP.DYN.LE00.FE.IN',
+                               'SP.DYN.LE00.MA.IN'
+                               )) %>%
+  filter(Country.Name %in% countries.life_expectancy) %>% 
+  mutate(Indicator.Name = fct_reorder2(Indicator.Name, Year, Value)) %>%
+  ggplot(aes(Year, Value, color = Indicator.Name)) +
+  geom_line() + 
+  facet_wrap(~Country.Name, scales = "free_x", ncol = 3) + 
+  guides(x = guide_axis(angle = 90)) + 
+  labs(x = 'Year', 
+       y = 'Life Expectancy', 
+       title = 'Life Expectancy at Birth') +
+  theme_bw()
+```
+
+
+
+```{r}
+
+education_df <-df.long %>% 
+  filter(Indicator.Code %in% c('SE.ADT.LITR.MA.ZS',
+                               'SE.ADT.LITR.FE.ZS'
+                               ) & (Year == 2020) & (Country.Code %in%   c('UMC','MIC','LMC','LIC','LMY')))
+
+education_df_clean = education_df[complete.cases(education_df),]
+
+```
+
+```{r}
+
+level_order <-c("Low income", "Low & middle income", "Lower middle income", "Middle income","Upper middle income")
+q <- ggplot(education_df, aes(x = factor(Country.Name, level = level_order), y = Value, colour = Indicator.Name,group = Indicator.Name)) +
+  geom_line(stat="identity") +
+   labs(x = 'Income Group', 
+       y = 'Literacy Rate', 
+       title = 'Literacy Rate Ages 15+ by Gender and Income Group') 
+
+q + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+  
+
+```{r}
+qq <- ggplot(education_df_clean,aes(Country.Name, Value, color = Indicator.Name)) +
+  geom_bar(stat='identity') 
+
+qq + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+  
+```{r}
+library(sf)
+
+# Read the attributes into a data frame
+
+attributes = read.csv("API_AG.CON.FERT.ZS_DS2_en_csv_v2_4754184.csv",
+	skip=4, stringsAsFactors=F)
+
+# Use country polygons from the maptools library
+
+library(maptools) # For wrld_simpl polygons
+
+data(wrld_simpl)
+
+countries = st_as_sf(wrld_simpl)
+
+# Join the attributes to the polygons
+
+countries = merge(countries, attributes, by.x = "ISO3", by.y = "Country.Code")
+
+# Convert the data column from text to numeric values
+
+countries$Fertilizer.kg.hectare = suppressWarnings(as.double(countries$X2020))
+
+# Keep only needed columns
+
+countries = countries[,c("NAME", "ISO3", "Fertilizer.kg.hectare", "geometry")]
+
+# Use a projection suitable for the world
+
+robinson = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+
+countries = st_transform(countries, robinson)
+
+# Plot with a green color ramp
+
+plot(countries["Fertilizer.kg.hectare"], breaks="quantile", 
+	pal=colorRampPalette(c("#a0ffa0", "#004000")), key.pos=1,
+	main="2018 Fertilizer Consumption by Country in kg per Hectare of Arable Land")
+```
+
+```{r}
+library(choroplethr)
+choroplethr_wdi(
+  code = "NY.GDP.PCAP.CD",
+  year = 2020,
+  title = "2020 US GDP per Capita",
+  num_colors = 7,
+  zoom = NULL
+)
+```
+
