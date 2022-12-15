@@ -1,6 +1,6 @@
 # Results
 
-```{r include=FALSE}
+```{r}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
@@ -12,8 +12,6 @@ library(forcats)
 library(ggpubr)
 ```
 
-<!-- Reading the Data, Converting to Long format -->
-
 ```{r}
 df <- read.csv('data/WDIData.csv')
 if ('X' %in% names(df)) df <- select(df, -X)
@@ -23,14 +21,27 @@ df.long <- df %>% pivot_longer(cols = !c(Country.Name,
                                          Indicator.Code),
                                names_to = 'Year',
                                values_to = 'Value')
-
 # cleaning year names
 df.long$Year <- sapply(df.long$Year, function(x){as.numeric(substr(x, 2, 5))})
 ```
 
-<!-- Cleveland Dot Plot showing Mortality Rates for 2020 -->
+We proposed to analyze various social, economic, and environmental indicators for various countries over the years. We have broken down our results into three distinct sections with each of them discussing a few relevant indicators. 
 
-<!-- Sorted in descending order on Male Mortality Rates -->
+### Social Indicators
+
+In the following subsections, we are going to visualize various plots depicting and comparing yearly trends for various indicators. We will also be comparing certain indicators across countries to understand the overall status of development around the world. 
+
+#### Mortality Rates
+
+We start off our discussion with mortality rates. Mortality rate is typically expressed in units of deaths per 1,000 individuals per year ![(wikipedia)](https://en.wikipedia.org/wiki/Mortality_rate). The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:
+
+1. Mortality rate, adult, male (per 1,000 male adults)
+2. Mortality rate, adult, female (per 1,000 female adults)
+3. Mortality rate, infant male (per 1,000 live births)
+4. Mortality rate, infant female (per 1,000 live births)
+
+
+One thing that strikes the eye immediately is that the mortality rate for infant male or infant female would be less than the mortality rate of adult male or adult female. This is due to the definition of the indicators for infants. They are calculating number of deaths of male and female infants per 1000 live births whereas adult mortality rates are being recorded per 1000 adults of the respective gender. However, the infant mortality rates would be less than adult mortality rates due to the nature of life. 
 
 ```{r}
 df.long %>% 
@@ -38,7 +49,7 @@ df.long %>%
   mutate(Value = coalesce(Value, 0),
          Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
   group_by(Country.Name, Indicator.Code) %>%
-  mutate(Value = mean(Value)) %>% 
+  mutate(Value = median(Value)) %>% 
   ungroup() %>%
   ggplot(aes(Value,
              fct_reorder2(Country.Name,
@@ -51,13 +62,12 @@ df.long %>%
        title = 'Adult Mortality Rates for 2020') + 
   theme_bw(8)
   
-
 df.long %>% 
   filter(Indicator.Code %in% c('SP.DYN.IMRT.FE.IN','SP.DYN.IMRT.MA.IN')  & Year == 2020) %>%
   mutate(Value = coalesce(Value, 0),
          Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
   group_by(Country.Name, Indicator.Code) %>%
-  mutate(Value = mean(Value)) %>% 
+  mutate(Value = median(Value)) %>% 
   ungroup() %>%
   ggplot(aes(Value,
              fct_reorder2(Country.Name,
@@ -69,40 +79,23 @@ df.long %>%
        y = 'Country Name', 
        title = 'Infant Mortality Rates for 2020') + 
   theme_bw(8)
-# 
-# df.long %>% 
-#   filter(Indicator.Code %in% c('SH.DYN.MORT.FE','SH.DYN.MORT.MA')  & Year == 2020) %>%
-#   mutate(Value = coalesce(Value, 0),
-#          Country.Name = fct_lump_n(Country.Name, 15, w = Value)) %>%
-#   group_by(Country.Name, Indicator.Code) %>%
-#   mutate(Value = mean(Value)) %>% 
-#   ungroup() %>%
-#   ggplot(aes(Value,
-#              fct_reorder2(Country.Name,
-#                           Indicator.Code == 'SH.DYN.MORT.MA', 
-#                           Value, .desc = FALSE),
-#              color = Indicator.Name)) + 
-#   geom_point() + 
-#   labs(x = 'Rate', 
-#        y = 'Country Name', 
-#        title = 'Under-5 Mortality Rates for 2020') + 
-#   theme_bw()
-
-
 ```
+Since the number of countries are huge, we just consider the top few countries in terms of largest mortality rates. Further, we use Cleveland dot plots as they provide an effective way to visualize a categorical variable (Country.Name) and a continuous value (Mortality Rate) corresponding to each category. The last few countries have been lumped together and the median was considered for them. The categories are arranged in the descending order of male mortality rates. 
 
-<!-- Line Plots with Facets showing multiple mortality rates of countries over the years -->
+We observe the following:
 
-<!-- Presented for 12 countries with the maximum infant mortality rate -->
+1. African nations have the highest mortality rates for both infants and adults. 
+2. Male mortality rates are generally higher than female mortality rates. 
 
-```{r}
+The above plot shows the countries that have the maximum mortality rates. To view the trend of mortality rates over the years, we handpick these countries and draw line charts for various mortality rates. We use the trick of faceting to make the process of reading the graph easy and aesthetic at the same time. 
 
+
+```{r fig.height=5}
 countries.mortality <- (df.long %>% 
   filter(Indicator.Code %in% c('SP.DYN.IMRT.MA.IN')  & Year == 2020) %>%
   arrange(desc(Value)) %>%
   slice(1:12) %>% 
   select(Country.Name) %>% as.vector())$Country.Name 
-
 df.long %>% 
   filter(Indicator.Code %in% c('SP.DYN.AMRT.FE',
                                'SP.DYN.AMRT.MA',
@@ -123,132 +116,155 @@ df.long %>%
   theme_bw(8)
 ```
 
-<!-- Missing Values -->
+We observe the following:
+1. The mortality rates have decreased over the years for all countries over the years. 
+2. As discussed previously, the adult male mortality rate is greater than adult female mortality rate which in turn is greater than infant mortality rates. 
+3. There was a rise in mortality rates from 1990 to 2000 for almost all countries. 
+4. This rise could be attributed to a myriad of region specific reasons - new diseases/illnesses, lack of physical activity, increased tobacco usage, lack of proper nutrition, among others. 
+
+#### Life Expectancy
+
+Life expectancy at birth is a measure of the average number of years a person is expected to live based on the current death rates.[(wikipedia)](https://en.wikipedia.org/wiki/Life_expectancy) The dataset has multiple indicators depicting mortality rates based on demographics. The most relevant ones are:
+
+1. Life expectancy at birth, male (years)
+2. Life expectancy at birth, female (years)
+
+In the below plot, we can see the life expectancy for males versus females across four different years: 1960,1980,2000,2020.For every year, the subplot contains the average life expectancies of 266 different countries.
+
 
 ```{r}
+sample_df <-df.long %>% 
+  filter(Indicator.Code %in% c('SP.DYN.LE00.MA.IN',
+                               'SP.DYN.LE00.FE.IN'
+                               ) & Year %in% c(1960,1980,2000,2020))
+female_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.FE.IN")
+male_df <- subset(sample_df,Indicator.Code=="SP.DYN.LE00.MA.IN")
 
-df.long %>%
-  group_by(Country.Name) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(desc(percent)) %>%
-  slice(1:15) %>%
-  ggplot(aes(fct_reorder(Country.Name, percent, .desc = TRUE), percent)) +
-  geom_col(fill = 'skyblue') + 
-  labs(x = 'Country Name', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Country') +
-  guides(x = guide_axis(angle = 45)) + 
-  theme_bw(8)
+colnames(female_df)[6] <- "female_life_expectancy"
+colnames(male_df)[6] <- "male_life_expectancy"
+life_expectancy = data.frame(female_df$Year,female_df$Country.Name,female_df$female_life_expectancy,male_df$male_life_expectancy)
 
+ggplot(life_expectancy,aes(x=male_df.male_life_expectancy, y=female_df.female_life_expectancy) )+
+geom_point(colour="white", fill="darkturquoise", shape=21, alpha=.55, size=5)+
+geom_abline(intercept = 0, slope=1)+
+scale_x_continuous(limits=c(35,80))+
+scale_y_continuous(limits=c(35,80))+
+labs(title="Life Expectancy at Birth by Country",
+     x="Males",
+     y="Females",
+     subtitle="266 countries",)+
+facet_wrap(~female_df.Year, scales = "free_x") 
 ```
+
+The diagonal line serves as a reference, a dot that lies exactly on the line represents a country whose life expectancy for a male and female are equal. 
+
+We observe the following:
+
+1. Across all four years, most of the data points lie above the reference line - this indicates that average life expectancies for women are consistently higher than those of males. 
+2. Over time, there is a slight upward shift in the data points - which indicates that the difference between male and female expectancies is increasing. 
+3. There is also clear shift in the data points towards the top right corner which depicts the fact that life expectancy has been increasing, regardless of gender. 
+4. This shift can likely be interpreted as the effect of medical progress and technological advancement in health care.
+
+#### Literacy Rates
+
+Literacy rate is defined by the percentage of the population of a given age group that can read and write.[(wikipedia)](https://en.wikipedia.org/wiki/Literacy) A high literacy rate suggests the existence of an effective primary education system and/or literacy programs that have enabled a large proportion of the population to acquire the ability to read or write. The adult literacy rate corresponds to ages 15 and above. 
+
+1. Literacy rate, adult male (% of males ages 15 and above)
+2. Literacy rate, adult male (% of females ages 15 and above)
+
+The below plot depicts the relationship between income groups and literacy rates by gender in 2020 and 2022. Each income group represents a group of people in a population that have incomes within the same range.
 
 ```{r}
+education_df <-df.long %>% 
+  filter(Indicator.Code %in% c('SE.ADT.LITR.MA.ZS',
+                               'SE.ADT.LITR.FE.ZS'
+                               ) & Year %in% c(2000,2020) & (Country.Code %in%   c('UMC','MIC','LMC','LIC')))
 
-df.long %>%
-  group_by(Year) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(desc(percent)) %>%
-  # slice(1:15) %>%
-  ggplot(aes(Year, percent)) +
-  geom_col(fill = 'skyblue', width = 0.5) + 
-  labs(x = 'Year', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Year') +
-  theme_bw(8)
+education_df_clean = education_df[complete.cases(education_df),]
 
+level_order <-c("Low income", "Lower middle income", "Middle income","Upper middle income")
+q <- ggplot(education_df, aes(x = factor(Country.Name, level = level_order), y = Value, fill = Indicator.Name,group = Indicator.Name)) +
+  geom_bar(stat="identity",position = position_dodge(),width = 0.7, alpha = 0.75, color = "black") +
+   labs(x = 'Income Group', 
+       y = 'Literacy Rate', 
+       title = 'Literacy Rate Ages 15+ by Gender and Income Group')  +
+  facet_wrap(~education_df$Year, scales = "free_x") 
+
+q + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
-```{r}
+We observe the following:
 
-df.long %>%
-  group_by(Indicator.Code) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(desc(percent)) %>%
-  # mutate(Indicator.Code = fct_reorder(Indicator.Code, percent, .desc = TRUE)) %>%
-  slice(1:20) %>%
-  ggplot(aes(fct_reorder(Indicator.Code, percent, .desc = TRUE), percent)) +
-  geom_col(fill = 'skyblue', width = 0.8) + 
-  labs(x = 'Indicator', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Indicator (Most)') +
-  guides(x = guide_axis(angle = 45)) + 
-  theme_bw(8)
+1. There is a clear positive correlation between income group and literacy rates for male and female adults. As we move up in the income group, the literacy rate also tends to increase for both genders. 
+2. Regardless of income group, males have a higher literacy rate than females. 
+3. There is a slight increase in literacy rate across all income groups and genders from 2020 to 2022.
+4. This increase is likely due to education becoming more accessible due to development of technology. 
 
-```
+### Gross Domestic Product
 
-```{r}
-
-df.long %>%
-  group_by(Indicator.Code) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>%
-  ungroup() %>%
-  arrange(percent) %>%
-  slice(1:20) %>%
-  ggplot(aes(fct_reorder(Indicator.Code, percent), percent)) +
-  geom_col(fill = 'skyblue', width = 0.7) + 
-  labs(x = 'Indicator', 
-       y = 'Percent of Missing Values',
-       title = 'Missing Values by Indicator (Least)') +
-  guides(x = guide_axis(angle = 45)) +
-  theme_bw(8)
-
-```
-
-``` {r}
-
-df.long %>% 
-  filter(Indicator.Code %in% c('EN.ATM.CO2E.PC',
-                               'AG.LND.IRIG.AG.ZS', 
-                               'EG.USE.COMM.FO.ZS',
-                               'SP.DYN.AMRT.FE',
-                               'SP.DYN.AMRT.MA',
-                               'SP.DYN.IMRT.FE.IN',
-                               'SP.DYN.IMRT.MA.IN',
-                               # 'SH.DYN.MORT.FE',
-                               # 'SH.DYN.MORT.MA', 
-                               'SL.TLF.0714.FE.ZS', 
-                               'SL.TLF.0714.MA.ZS', 
-                               'NY.GDP.PCAP.CD', 
-                               'SI.DST.FRST.20', 
-                               'SI.DST.05TH.20')) %>%
-  group_by(Indicator.Name, Year) %>%
-  summarize(percent = sum(is.na(Value))*100/n()) %>% 
-  ungroup() %>%
-  ggplot(aes(Year, y = fct_reorder(Indicator.Name, percent, sum), fill = percent)) +
-  geom_tile(color = 'white') +
-  scale_fill_gradient2(low = "white", high ="red") + 
-  labs(x = 'Year', 
-       y = 'Indicator Name', 
-       title = 'Missing Values for Selected Indicators') + 
-  theme_bw(8)
-
-```
+According to [wikipedia](https://en.wikipedia.org/wiki/Gross_domestic_product), Gross domestic product (GDP) is a monetary measure of the market value of all the final goods and services produced and sold (not resold) in a specific time period by countries. We use both GDP and GDP per capita as we want to compare both national economies on the international market (GDP) and living standards between nations (GDP per capita). 
 
 ```{r}
 # GDP
-
+TRIL <- 1000000000000
 df.gdp <- df.long %>% 
-  filter(Indicator.Code == 'NY.GDP.PCAP.CD') %>% 
+  filter(Indicator.Code == 'NY.GDP.MKTP.CD') %>% 
   group_by(Year) %>%
-  summarise(GDP = sum(Value, na.rm = TRUE), Missing = sum(is.na(Value))) %>%
+  summarise(GDP = sum(Value, na.rm = TRUE)/TRIL,
+            Missing = sum(is.na(Value))*100/n()) %>%
   ungroup() 
-
 p1 <- df.gdp %>%
-  ggplot(aes(Year, GDP)) + geom_line() + theme_bw(8) + labs(title = 'Overall GDP over the years', subtitle = 'Along with corresponding missing values')
-
+  ggplot(aes(Year, GDP)) + 
+  geom_line() + 
+  geom_vline(aes(xintercept = 2008), color = 'red') + 
+  annotate(geom = "text",
+           x = 2008,
+           y = 200, 
+           label = "2008",
+           color = "red", 
+           angle = 90,
+           vjust = -0.5, 
+           size = 3) +
+  geom_vline(aes(xintercept = 2014), color = 'blue') + 
+  annotate(geom = "text",
+           x = 2014,
+           y = 200,
+           label = "2014",
+           color = "blue",
+           angle = 90, 
+           vjust = -0.5,
+           size = 3) +
+  geom_vline(aes(xintercept = 2019), color = 'darkgreen') + 
+  annotate(geom = "text",
+           x = 2019,
+           y = 200,
+           label = "2019",
+           color = "darkgreen",
+           angle = 90,
+           vjust = -0.5, 
+           size = 3) +
+  labs(y = "GDP (Trillions of Dollars)", 
+       title = 'Overall GDP over the years',
+       subtitle = 'Along with corresponding missing values') + 
+  theme_bw(8)
 p2 <- df.gdp %>%
-  ggplot(aes(Year, Missing)) + geom_col(fill = 'red', alpha = 0.5) + theme_bw(8)
-
+  ggplot(aes(Year, Missing)) + 
+  geom_col(fill = 'red', alpha = 0.5) +
+  labs(y = '% of missing values') +
+  theme_bw(8)
 ggpubr::ggarrange(p1, p2, ncol = 1)
  
   
 ```
 
-```{r}
+Initially, we plot the overall GDP of the world over the years by aggregating individual GDP values. We observe that overall the GDP of the world has risen. Obviously, this trend is expected as the world economy has grown, and more and more countries have started contributing. This is backed by the reduction in the number of missing values over the years. Further, we observe three significant dips in the overall GDP. 
 
+1. Around 2008 (red), the world witnessed the Great Recession. 
+2. In 2014 (blue), there was another financial crisis observed in Russia, Brazil where prices of oil barrels dropped by nearly 40%.
+3. In 2019 (green), humanity faced its biggest challenge in Covid-19 leading to a collapse of the stock market.
+
+
+```{r}
 df.long %>%
   filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Year == '2020') %>%
   mutate(Value = coalesce(Value, 0),
@@ -263,14 +279,30 @@ df.long %>%
        title = 'GDP per capita for 2020') + 
   theme_bw(8)
   
-
 # Compare it with the value of a dollar, how it has grown.
 ```
 
-
+We use choropleth.
 
 ```{r}
+library(choroplethr)
+choroplethr_wdi(
+  code = "NY.GDP.PCAP.CD",
+  year = 2020,
+  title = "2020 US GDP per Capita",
+  num_colors = 7,
+  zoom = NULL
+)
+```
+Here we can see the US GDP per Capita for 2020 at a country level. The data has been categorized into different classes such that the lighter shades of blue represent lower GDP values and darker shades represent higher GDP values. Any countries colored in black indicate that data was not available. 
 
+1. Firstly, it is noticeable that a majority of North American and Asian countries fall between a certain range of GDP values. The GDP per Capita for American countries is on average higher than countries of other continents.
+2. Africa shows a varied range of GDP per Capita acorss countries. It seems to be the only continent for which it is visibly clear at a glance that there is a country in every class of GDP values. 
+3. From this graph, there is no indication that the size of a country has correlation with its US GDP per Capita. 
+
+The following graphs help focus in on a subset of countries when analyzing US GDP per Capita. Let's take a closer look at the top 5 countries with the highest US GDP per Capita: Monaco, Luxembourg, Bermuda, Switzerland, and Ireland. 
+
+```{r}
 countries.gdp <- (df.long %>%
   filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Year == '2020') %>%
   arrange(desc(Value)) %>%
@@ -281,15 +313,93 @@ countries.gdp <- (df.long %>%
 p1 <- df.long %>%
   filter(Indicator.Code == 'NY.GDP.PCAP.CD' & Country.Name %in% countries.gdp) %>%
   mutate(Country.Name = fct_reorder2(Country.Name, Year == '2020', Value)) %>%
-  ggplot(aes(Year, Value, color = Country.Name)) + geom_line() + labs(title = 'GDP per Capita (current USD)') + theme_bw(8)
-
-
-# update color of bar plot by releveling factors
-p2 <- df.long %>%
+  ggplot(aes(Year, Value, color = Country.Name)) +
+  geom_line() + 
+  labs(title = 'GDP per Capita (current USD)') + 
+  theme_bw(8)
+df.gdp.bar <- df.long %>%
   filter(Indicator.Code == 'NY.GDP.MKTP.CD' & Country.Name %in% countries.gdp & Year == '2020') %>%
-  ggplot(aes(Country.Name, Value, fill = Country.Name)) + geom_col() + coord_flip() + labs(title = 'GDP (current USD)') + theme_bw(8) 
+  mutate(Country.Name = fct_relevel(Country.Name, levels = levels(as.factor(p1$data[[1]]))))
+p2 <- df.gdp.bar %>%
+  ggplot(aes(fct_rev(Country.Name), Value*1000/TRIL, fill = Country.Name)) +
+  geom_col() + 
+  coord_flip() + 
+  labs(title = 'GDP (Current USD)', x = 'Country', y = 'GDP (Billions of Dollars)') +
+  theme_bw(8) 
+ggarrange(p1, p2, ncol = 2, common.legend = TRUE, legend = "bottom")
+```
 
-ggarrange(p1, p2, ncol = 2, common.legend = TRUE)
+### Income Disparity
+
+### Environmental Indicators
+
+Lastly, we explored indicators that provide insight into the state of the global environment. We selected the following indicators to analyze:
+
+ 1. Agricultural land (% of land area)
+ 2. Child employment in agriculture (% of economically active children ages 7-14)
+ 3. CO2 emissions (metric tons per capita)
+ 4. Forest area (% of land area)
+ 5. Fossil fuel energy consumption (% of total)
+
+Each line in the following plot represents a country.We have a chosen a random sample of 11 countries to better understand the relationship amongst the above indicators within a country and against other countries at a global level. Each indicator is represented by a point on the line. 
+
+```{r}
+library(viridis)
+
+df.environment <- df.long %>% 
+  filter(Indicator.Code %in% c('AG.LND.AGRI.ZS',
+                               'SL.AGR.0714.ZS', 
+                               'EN.ATM.CO2E.PC',
+                               'AG.LND.FRST.ZS',
+                               'EG.USE.COMM.FO.ZS') & 
+          Country.Code %in% c('ALB','BRA', 'CRI','DOM','GHA','IDN','NPL','SEN','TGO','VNM', 'ZMB') & Year %in% c(1960,1980,2000,2020)) %>% 
+  group_by(Indicator.Name)
+
+df.agriland = df.environment %>% filter(Indicator.Code == 'AG.LND.AGRI.ZS') %>% 
+  subset(select = c('Country.Name', 'Country.Code', 'Value')) %>% rename("AgriLand_%" = "Value")
+
+df.child_agri = df.environment %>% filter(Indicator.Code == 'SL.AGR.0714.ZS') %>% 
+  subset(select = 'Value') %>% rename("child_agri_employed_%" = "Value")
+
+df.co2 = df.environment %>% filter(Indicator.Code == 'EN.ATM.CO2E.PC') %>% 
+  subset(select = 'Value') %>% rename("CO2_tonne_pc" = "Value")
+
+df.forest_area = df.environment %>% filter(Indicator.Code == 'AG.LND.FRST.ZS') %>% 
+  subset(select = 'Value') %>% rename("forest_area_%" = "Value")
+
+df.fossil_energy = df.environment %>% filter(Indicator.Code == 'EG.USE.COMM.FO.ZS') %>% 
+  subset(select = 'Value') %>% rename("fossil_fuel_%" = "Value")
+
+df.pcp = cbind(df.agriland, df.child_agri, df.co2, df.forest_area, df.fossil_energy) 
+
+ggparcoord(df.pcp, columns=3:7, groupColumn=1, alpha=0.15, scale='uniminmax',
+          title = "Global Environmental Trends") +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+          scale_color_viridis(discrete=TRUE)  +
+          geom_line(size=0.7)
 ```
 
 
+#### Water Supply and Sanitation
+
+Safe and readily available water promotes health, improves the quality of the environment and thus, the quality of life in a community.A safely managed drinking water source is one that accessible on premises, available when needed and free from contamination.
+ 
+The following graph shows the percentage of population distribution using safely managed drinking water services across a subset of countries from 1960 to 2021. Each boxplot represents a country and the bar across each box is the median percent population using safely managed drinking water services.The line extending below each box is the minimum (the smallest number in the set) and above the box is the maximum (the largest number in the set). 
+ 
+```{r}
+
+water_df = df.long %>% filter(Indicator.Code == 'SH.H2O.SMDW.ZS' & Country.Code %in% c('AFG','BRA', 'CHL','USA','GHA','BLZ') )
+water_df = water_df[complete.cases(water_df),]
+
+ggplot(water_df, aes(x = reorder(Country.Name,Value), y = Value)) + 
+  geom_boxplot(fill="cadetblue1", color = "black") +
+  labs(y = '% of Population', 
+       x = 'Country Name', 
+       title = 'People using safely managed drinking water services (% of population)')
+ 
+```
+We observe the following:
+
+1. Right of the bat, it is clear that there exists a huge disparity in the percentage of a population using safely managed drinking water services between different countries.
+2. In this subset of countries, Afghanistan has lowest median of approximately only 13% of the population having access to clean drinking water whereas Chile has the highest at approximately 94%. 
+3. Ghana has the largest difference between the minimum and maximum percentage population value.This may indicate that over the years, the population percentages have varied. On the other the US seems to have consistently stayed within high population percentages throughout the years. 
