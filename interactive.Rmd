@@ -17,6 +17,7 @@ write.csv(df.long %>%
           row.names = FALSE)
 ```
 
+<script src="https://d3js.org/d3.v7.js"></script>
 <iframe src="interactive.html" width="650" height="700"></iframe>
 
 
