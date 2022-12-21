@@ -1,3 +1,1 @@
-Hey! This is the github repo for the final project for EDAV. We intend to visualize the World Development Indicators using R.
-
-  The bookdown can be found here: [Bookdown](https://eklavyaj.github.io/World-Development-Indicators/)
+This is the source for our World-Development-Indicators project. Please refer to the final repo for the completed work.
